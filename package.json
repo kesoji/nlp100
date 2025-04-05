@@ -3,12 +3,20 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "vitest"
+    "test": "vitest",
+    "make": "node generate-exercise.js",
+    "make:js": "node generate-exercise.js --language nodejs --number",
+    "make:py": "node generate-exercise.js --language python --number"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "vitest": "^3.0.9"
+    "vitest": "^3.0.9",
+    "yargs": "^17.7.2"
+  },
+  "dependencies": {
+    "axios": "^1.6.2",
+    "cheerio": "^1.0.0-rc.12"
   }
 }
