@@ -15,11 +15,11 @@ const jsTemplate = (problemNumber, url, title, description, testCase) => {
     .map(line => `// ${line.trim()}`)
     .join('\n');
 
-  return `import { test, expect } from "vitest";
-
-// ${url}
+  return `// ${url}
 // ${problemNumber}. ${title}
 ${formattedDescription}
+  
+import { test, expect } from "vitest";
 
 test("test", () => {
   ${testCase}
