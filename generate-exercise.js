@@ -107,30 +107,26 @@ async function extractProblems(html, chapter) {
   const $ = cheerio.load(html);
   const problems = {};
 
-  // Find all h2 elements that contain problem titles
-  $("h2").each((i, heading) => {
-    // Get the problem ID from the heading ID
-    const headingId = $(heading).attr("id");
-    if (!headingId) return;
+  // Find all h2 elements that contain problem titles (format: "XX. Title")
+  $("h2, h3").each((i, heading) => {
+    // Extract the problem number and title from the heading text
+    const headingText = $(heading).text().trim();
+    const match = headingText.match(/^(\d+)\.\s*(.*)/);
 
-    // Extract the problem number from the heading ID (e.g., "03-円周率" -> "03")
-    const match = headingId.match(/^(\d+)-/);
     if (!match) return;
 
     const problemNumber = match[1].padStart(3, "0");
-
-    // Extract the problem title from the heading text (e.g., "03. 円周率" -> "円周率")
-    const titleMatch = $(heading)
-      .text()
-      .match(/\d+\.\s*(.*)/);
-    const title = titleMatch ? titleMatch[1].trim() : $(heading).text().trim();
+    const title = match[2].trim();
 
     // Extract the problem description from the paragraph following the heading
     let description = "";
     let nextElement = $(heading).next();
 
     // Continue until we hit the next heading or run out of elements
-    while (nextElement.length > 0 && nextElement.prop("tagName") !== "H2") {
+    while (
+      nextElement.length > 0 &&
+      !["H2", "H3"].includes(nextElement.prop("tagName"))
+    ) {
       if (nextElement.prop("tagName") === "P") {
         description += nextElement.text().trim() + " ";
       }
@@ -140,7 +136,8 @@ async function extractProblems(html, chapter) {
     // Format the description with proper line breaks
     description = formatDescription(description);
 
-    // Create the problem URL
+    // Create the problem URL with anchor to the heading
+    const headingId = $(heading).attr("id") || `problem-${problemNumber}`;
     const url = `https://nlp100.github.io/2025/ja/ch${chapter.toString().padStart(2, "0")}.html#${headingId}`;
 
     // Store the problem data
